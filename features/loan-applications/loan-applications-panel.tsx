@@ -1,5 +1,3 @@
-"use client"
-
 import { LoanApplicationsEmpty } from "./components/loan-applications-empty"
 import { LoanApplicationsError } from "./components/loan-applications-error"
 import { LoanApplicationsLoading } from "./components/loan-applications-loading"

@@ -8,5 +8,5 @@ alwaysApply: false
 
 - Parse untrusted or external JSON (fixtures, HTTP bodies, file reads) with Zod before domain use.
 - Fail closed: invalid payloads return an error response or throw; do not silently coerce into partial domain objects.
-- Colocate Zod schemas with domain types (typically `types.ts` next to the feature or shared schema module).
+- Colocate Zod schemas in a feature `schema.ts` or `schema/` module (use a directory when there are several schemas). Derive domain types with `z.infer` and keep non-schema types in `types.ts`.
 - Prefer `z.infer<typeof schema>` for TypeScript types derived from schemas.

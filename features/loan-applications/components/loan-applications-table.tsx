@@ -25,7 +25,7 @@ export function LoanApplicationsTable() {
     [state.columns]
   )
 
-  const data = state.filteredRows.length > 0 ? state.filteredRows : EMPTY_DATA
+  const data = state.rows.length > 0 ? state.rows : EMPTY_DATA
 
   const table = useTable(
     {

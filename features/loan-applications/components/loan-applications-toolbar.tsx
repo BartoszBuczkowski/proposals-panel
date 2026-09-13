@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,9 +15,21 @@ import { Button } from "@/components/ui/button"
 import { getStatusOptions } from "../functions/filter-loan-applications"
 import { useLoanApplications } from "./loan-applications-provider"
 
+const SEARCH_DEBOUNCE_MS = 400
+
 export function LoanApplicationsToolbar() {
   const { state, actions } = useLoanApplications()
   const statusOptions = getStatusOptions(state.columns)
+  const [initialSearch] = useState(state.filters.search)
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
+      }
+    }
+  }, [])
 
   const statusItems = [
     { label: "All statuses", value: null },
@@ -33,8 +46,16 @@ export function LoanApplicationsToolbar() {
           <FieldLabel htmlFor="loan-search">Search</FieldLabel>
           <Input
             id="loan-search"
-            value={state.filters.search}
-            onChange={(event) => actions.setSearch(event.target.value)}
+            defaultValue={initialSearch}
+            onChange={(event) => {
+              const value = event.target.value
+              if (debounceTimer.current) {
+                clearTimeout(debounceTimer.current)
+              }
+              debounceTimer.current = setTimeout(() => {
+                actions.setSearch(value)
+              }, SEARCH_DEBOUNCE_MS)
+            }}
             placeholder="Customer or loan ID"
           />
         </Field>

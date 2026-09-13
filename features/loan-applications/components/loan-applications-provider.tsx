@@ -1,18 +1,14 @@
 "use client"
 
-import {
-  createContext,
-  use,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react"
-import { filterLoanApplications } from "../functions/filter-loan-applications"
-import { useLoanApplicationsData } from "../hooks/use-loan-applications-data"
+import { createContext, use, type ReactNode } from "react"
+import { useLoanApplicationsColumns } from "../hooks/use-loan-applications-columns"
+import { useLoanApplicationsQuery } from "../hooks/use-loan-applications-query"
+import { useLoanApplicationsRows } from "../hooks/use-loan-applications-rows"
 import type {
   ColumnMetadata,
   LoanApplication,
   LoanApplicationsFilters,
+  LoanApplicationsPagination,
   PanelStatus,
 } from "../types"
 
@@ -21,13 +17,14 @@ type LoanApplicationsContextValue = {
     status: PanelStatus
     columns: ColumnMetadata[]
     rows: LoanApplication[]
-    filteredRows: LoanApplication[]
     filters: LoanApplicationsFilters
+    pagination: LoanApplicationsPagination
     errorMessage: string | null
   }
   actions: {
     setStatusFilter: (status: string | null) => void
     setSearch: (search: string) => void
+    setPage: (page: number) => void
     reload: () => void
     simulateError: () => void
   }
@@ -44,46 +41,54 @@ export function LoanApplicationsProvider({
 }: {
   children: ReactNode
 }) {
-  const { state: dataState, actions: dataActions } = useLoanApplicationsData()
-  const [filters, setFilters] = useState<LoanApplicationsFilters>({
-    status: null,
-    search: "",
-  })
-
-  const filteredRows = useMemo(
-    () => filterLoanApplications(dataState.rows, filters),
-    [dataState.rows, filters]
+  const {
+    state: queryState,
+    actions: queryActions,
+    meta: queryMeta,
+  } = useLoanApplicationsQuery()
+  const { state: columnsState, actions: columnsActions } =
+    useLoanApplicationsColumns()
+  const { state: rowsState, actions: rowsActions } = useLoanApplicationsRows(
+    queryState.query
   )
 
-  const hasActiveFilters =
-    filters.status != null || filters.search.trim().length > 0
-
   const panelStatus: PanelStatus = (() => {
-    if (dataState.status === "loading") return "loading"
-    if (dataState.status === "error") return "error"
-    if (dataState.rows.length === 0) return "empty"
-    if (filteredRows.length === 0) return "empty"
+    if (columnsState.status === "loading" || rowsState.status === "loading") {
+      return "loading"
+    }
+    if (columnsState.status === "error" || rowsState.status === "error") {
+      return "error"
+    }
+    if (rowsState.status === "empty") {
+      return "empty"
+    }
     return "success"
   })()
+
+  const errorMessage =
+    columnsState.errorMessage ?? rowsState.errorMessage ?? null
 
   const value: LoanApplicationsContextValue = {
     state: {
       status: panelStatus,
-      columns: dataState.columns,
-      rows: dataState.rows,
-      filteredRows,
-      filters,
-      errorMessage: dataState.errorMessage,
+      columns: columnsState.columns,
+      rows: rowsState.rows,
+      filters: queryState.filters,
+      pagination: rowsState.pagination,
+      errorMessage,
     },
     actions: {
-      setStatusFilter: (status) =>
-        setFilters((current) => ({ ...current, status })),
-      setSearch: (search) => setFilters((current) => ({ ...current, search })),
-      reload: dataActions.reload,
-      simulateError: dataActions.simulateError,
+      setStatusFilter: queryActions.setStatusFilter,
+      setSearch: queryActions.setSearch,
+      setPage: queryActions.setPage,
+      reload: () => {
+        columnsActions.reload()
+        rowsActions.reload()
+      },
+      simulateError: rowsActions.simulateError,
     },
     meta: {
-      hasActiveFilters,
+      hasActiveFilters: queryMeta.hasActiveFilters,
     },
   }
 

@@ -7,7 +7,7 @@ alwaysApply: true
 
 - Put each business capability under `features/<name>/`.
 - The feature entry file composes the feature for consumers.
-- Feature-local code may include `types.ts`, `components/`, `hooks/`, `functions/`, and `*.spec.ts` / `*.spec.tsx`.
+- Feature-local code may include `types.ts`, `schema.ts` / `schema/`, `components/`, `hooks/`, `functions/`, and `*.spec.ts` / `*.spec.tsx`.
 - Put only reusable UI in `components/` (including `components/ui`).
 - One React component per module file.
 - Keep business logic out of component files; place it in `hooks/` or `functions/`.
