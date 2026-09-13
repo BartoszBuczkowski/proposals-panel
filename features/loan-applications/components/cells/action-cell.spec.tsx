@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
-import { ActionCell } from "./components/cells/action-cell"
+import { ActionCell } from "../../components/cells/action-cell"
 import {
   editActionColumn,
   loanApplicationWithEditPermission,
-} from "./loan-applications.fixture"
+} from "../../loan-applications.fixture"
 
 describe("ActionCell", () => {
   it("disables edit when permission is false and enables when true", () => {
