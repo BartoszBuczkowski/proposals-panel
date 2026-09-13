@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { loanApplicationRows } from "../../../loan-applications.fixture"
 import { EMPTY_PAGINATION, toRowsState } from "./to-rows-state"
 
 describe("toRowsState", () => {
@@ -59,13 +60,7 @@ describe("toRowsState", () => {
   })
 
   it("maps success payload with items and pagination", () => {
-    const row = {
-      loanId: "LN-1",
-      customerName: "Ada",
-      status: "new",
-      market: "PL",
-      permissions: { canEdit: true },
-    }
+    const row = loanApplicationRows[0]
 
     expect(
       toRowsState({
