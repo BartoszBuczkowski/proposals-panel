@@ -1,0 +1,27 @@
+---
+description: Generic React composition patterns for features and shared UI
+alwaysApply: true
+---
+
+# Composition patterns
+
+- Do not add boolean props to switch modes or UI states (`isLoading`, `isEmpty`, `isEditing`). Prefer composition.
+- Prefer compound components that share context over prop-drilling configuration.
+- Lift shared state into a provider so sibling parts can access it.
+- The provider is the only place that knows how state is implemented. Expose a context shaped as `{ state, actions, meta }`.
+- Prefer explicit variant components for lifecycle UI (`FeatureLoading`, `FeatureError`, `FeatureEmpty`, `FeatureSuccess`) instead of one component with conditional flags.
+- Prefer `children` for composition over `renderX` props.
+
+```tsx
+// Prefer
+<FeatureProvider>
+  <Feature.Toolbar />
+  <FeatureLoading />
+  <FeatureError />
+  <FeatureEmpty />
+  <Feature.Table />
+</FeatureProvider>
+
+// Avoid
+<Feature isLoading isEmpty hasError showToolbar />
+```

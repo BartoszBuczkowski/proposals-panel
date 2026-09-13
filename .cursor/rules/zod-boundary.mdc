@@ -1,0 +1,12 @@
+---
+description: Validate external JSON with Zod at API and type boundaries
+globs: app/api/**/*.{ts,tsx},**/types.ts,**/*schema*
+alwaysApply: false
+---
+
+# Zod at the boundary
+
+- Parse untrusted or external JSON (fixtures, HTTP bodies, file reads) with Zod before domain use.
+- Fail closed: invalid payloads return an error response or throw; do not silently coerce into partial domain objects.
+- Colocate Zod schemas with domain types (typically `types.ts` next to the feature or shared schema module).
+- Prefer `z.infer<typeof schema>` for TypeScript types derived from schemas.
