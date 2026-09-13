@@ -10,10 +10,6 @@ export type FetchValidatedState<TData> = {
   errorMessage: string | null
 }
 
-type UseFetchValidatedOptions = {
-  cache?: RequestCache
-}
-
 function createLoadingState<TData>(): FetchValidatedState<TData> {
   return {
     status: "loading",
@@ -28,13 +24,11 @@ function errorMessageOf(error: unknown): string {
 
 export function useFetchValidated<TSchema extends z.ZodType>(
   url: string,
-  schema: TSchema,
-  options: UseFetchValidatedOptions = {}
+  schema: TSchema
 ): {
   state: FetchValidatedState<z.infer<TSchema>>
   actions: { reload: () => void }
 } {
-  const cache = options.cache ?? "no-store"
   const [state, setState] = useState<FetchValidatedState<z.infer<TSchema>>>(
     createLoadingState
   )
@@ -52,7 +46,7 @@ export function useFetchValidated<TSchema extends z.ZodType>(
     async function load() {
       try {
         const data = await fetchValidated(url, schema, {
-          cache: reloadToken > 0 ? "no-store" : cache,
+          cache: "no-store",
         })
 
         if (!cancelled) {
@@ -78,7 +72,7 @@ export function useFetchValidated<TSchema extends z.ZodType>(
     return () => {
       cancelled = true
     }
-  }, [url, schema, cache, reloadToken])
+  }, [url, schema, reloadToken])
 
   return {
     state,

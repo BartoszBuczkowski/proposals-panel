@@ -36,9 +36,10 @@ Row action availability uses `row.permissions[column.key]`. Fixture labels may b
 
 ## Technical decisions
 
-- **Route Handlers** (`/api/columns`, `/api/rows`) read fixtures and validate with Zod before responding. Pass `?error=1` on `/api/rows` to exercise the error state.
+- **Column metadata** is read on the server via a shared `readColumns()` helper and passed into the panel as props (ISR with `revalidate = 3600`). See [ADR 0002](docs/adr/0002-server-rendered-column-metadata.md).
+- **Route Handlers**: `/api/columns` remains a public HTTP endpoint over the same helper; `/api/rows` is the only endpoint the browser fetches. Pass `?error=1` on `/api/rows` to exercise the error state.
 - **TanStack Table v9** builds column defs from metadata (see [ADR 0001](docs/adr/0001-metadata-driven-table.md)).
-- **Feature module** under `features/loan-applications/` with provider + compound UI and explicit loading / error / empty / success views.
+- **Feature module** under `features/loan-applications/` with a rows-focused provider + compound UI and explicit loading / error / empty / success views. Filters come from URL search params via `useLoanApplicationsQuery`.
 - **Currency** cells show a formatted number with a generic currency marker (fixtures do not include a currency code).
 - **Search** matches `customerName` and `loanId`; status uses the status column `options`.
 

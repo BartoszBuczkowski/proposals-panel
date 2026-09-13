@@ -13,14 +13,19 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { getStatusOptions } from "../functions/filter-loan-applications"
+import { useLoanApplicationsQuery } from "../hooks/use-loan-applications-query"
 import { useLoanApplications } from "./loan-applications-provider"
 
 const SEARCH_DEBOUNCE_MS = 400
 
 export function LoanApplicationsToolbar() {
   const { state, actions } = useLoanApplications()
+  const {
+    state: queryState,
+    actions: queryActions,
+  } = useLoanApplicationsQuery()
   const statusOptions = getStatusOptions(state.columns)
-  const [initialSearch] = useState(state.filters.search)
+  const [initialSearch] = useState(queryState.filters.search)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -53,7 +58,7 @@ export function LoanApplicationsToolbar() {
                 clearTimeout(debounceTimer.current)
               }
               debounceTimer.current = setTimeout(() => {
-                actions.setSearch(value)
+                queryActions.setSearch(value)
               }, SEARCH_DEBOUNCE_MS)
             }}
             placeholder="Customer or loan ID"
@@ -63,9 +68,9 @@ export function LoanApplicationsToolbar() {
           <FieldLabel>Status</FieldLabel>
           <Select
             items={statusItems}
-            value={state.filters.status}
+            value={queryState.filters.status}
             onValueChange={(value) =>
-              actions.setStatusFilter(
+              queryActions.setStatusFilter(
                 typeof value === "string" ? value : null
               )
             }

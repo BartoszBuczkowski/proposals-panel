@@ -1,10 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useLoanApplicationsQuery } from "../hooks/use-loan-applications-query"
 import { useLoanApplications } from "./loan-applications-provider"
 
 export function LoanApplicationsPagination() {
-  const { state, actions } = useLoanApplications()
+  const { state } = useLoanApplications()
+  const { actions: queryActions } = useLoanApplicationsQuery()
   const { page, totalPages, total } = state.pagination
 
   if (totalPages <= 1) {
@@ -21,7 +23,7 @@ export function LoanApplicationsPagination() {
           type="button"
           variant="outline"
           disabled={page <= 1}
-          onClick={() => actions.setPage(page - 1)}
+          onClick={() => queryActions.setPage(page - 1)}
         >
           Previous
         </Button>
@@ -29,7 +31,7 @@ export function LoanApplicationsPagination() {
           type="button"
           variant="outline"
           disabled={page >= totalPages}
-          onClick={() => actions.setPage(page + 1)}
+          onClick={() => queryActions.setPage(page + 1)}
         >
           Next
         </Button>

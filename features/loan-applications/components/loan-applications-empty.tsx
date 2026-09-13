@@ -8,10 +8,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { useLoanApplicationsQuery } from "../hooks/use-loan-applications-query"
 import { useLoanApplications } from "./loan-applications-provider"
 
 export function LoanApplicationsEmpty() {
-  const { state, meta } = useLoanApplications()
+  const { state } = useLoanApplications()
+  const { meta } = useLoanApplicationsQuery()
   if (state.status !== "empty") return null
 
   return (

@@ -1,12 +1,8 @@
-import { readFile } from "node:fs/promises"
-import path from "node:path"
-import { columnsSchema } from "@/features/loan-applications/schema"
+import { readColumns } from "@/features/loan-applications/functions/read-columns"
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), "data", "columns.json")
-    const raw = await readFile(filePath, "utf8")
-    const columns = columnsSchema.parse(JSON.parse(raw))
+    const columns = await readColumns()
     return Response.json(columns, {
       headers: {
         "Cache-Control":
